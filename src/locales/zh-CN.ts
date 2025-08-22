@@ -42,7 +42,11 @@ export default {
     delOk: '确定',
     delCancel: '取消',
     delNoData: '请选择需要删除的数据',
-    delSuccess: '删除成功'
+    delSuccess: '删除成功',
+    copy: '复制',
+    clearAndReset: '清除缓存并且重置',
+    copySuccess: '复制成功',
+    copyFailed: '复制失败'
   },
   error: {
     noPermission: `抱歉，您无权访问此页面。`,

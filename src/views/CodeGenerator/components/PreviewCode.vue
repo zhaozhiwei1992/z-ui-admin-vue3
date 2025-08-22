@@ -101,12 +101,12 @@ const copy = async (text: string) => {
 /**
  * 代码高亮
  */
-const highlightedCode = (code) => {
-  // const language = item.filePath.substring(item.filePath.lastIndexOf('.') + 1)
-  // const result = hljs.highlight(language, item.code || '', true)
-  // return result.value || '&nbsp;'
-  console.log('code', code)
-  return code
+const highlightedCode = (item) => {
+  const language = item.filePath.substring(item.filePath.lastIndexOf('.') + 1)
+  console.log('language', language)
+  const result = hljs.highlight(language, item.code || '', true)
+  console.log('result', result)
+  return result.value || '&nbsp;'
 }
 
 /** 初始化 **/
@@ -148,7 +148,7 @@ onMounted(async () => {
       <!-- 代码目录树 -->
       <el-card
         v-loading="loading"
-        :gutter="12"
+        :gutter="8"
         class="w-1/3"
         element-loading-text="生成文件目录中..."
         shadow="hover"
@@ -168,7 +168,7 @@ onMounted(async () => {
       <!-- 代码 -->
       <el-card
         v-loading="loading"
-        :gutter="12"
+        :gutter="16"
         class="ml-3 w-2/3"
         element-loading-text="加载代码中..."
         shadow="hover"
@@ -183,8 +183,8 @@ onMounted(async () => {
             <el-button class="float-right" text type="primary" @click="copy(item.code)">
               {{ t('common.copy') }}
             </el-button>
-            <el-scrollbar height="600px">
-              <pre><code v-dompurify-html="highlightedCode(item.code)" class="hljs"></code></pre>
+            <el-scrollbar height="800px">
+              <pre><code v-html="highlightedCode(item)"></code></pre>
             </el-scrollbar>
           </el-tab-pane>
         </el-tabs>
