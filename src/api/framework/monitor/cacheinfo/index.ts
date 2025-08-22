@@ -14,3 +14,10 @@ export const getCacheContentInfo = (cacheName: string, key: string): Promise<Cac
   const params = { cacheName: cacheName, key: key }
   return request.get({ url: '/cache/metrics/content', params })
 }
+
+/**
+ * 获取redis 监控信息
+ */
+export const getRedisCacheInfo = () => {
+  return request.get({ url: '/cache/metrics/redis' })
+}

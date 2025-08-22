@@ -3,6 +3,7 @@ import { generateCodeApi, getColListApi, getTableListApi } from '@/api/code-gene
 import { TableData } from '@/api/code-generator/types'
 import { ContentWrap } from '@/components/ContentWrap'
 import { getCurrentInstance, reactive } from 'vue'
+import PreviewCode from './components/PreviewCode.vue'
 
 const currentInstance: any = getCurrentInstance()
 // vue3中不能直接使用
@@ -33,21 +34,12 @@ const columnTypeMapping = [
 
 const handleTableSelectionChange = async (row) => {
   // 明细表数据过滤
-  // tableData.forEach((item: any) => {
-  //   // 排他,每次选择时把其他选项都清除
-  //   if (item.tableName !== row.tableName) {
-  //     item.checked = false
-  //   }
-  // })
-  // 如果使用单选框,这里可以把当前选中的这一项先保存起来
   tableCurrentSelectRow.value = row
-  // currentInstance.ctx.$refs.table.clearSelection()
-  // currentInstance.ctx.$refs.table.toggleRowSelection(tableCurrentSelectRow)
   fetchColData(currentTableName())
 }
 const currentTableName = (): string => {
   // 当前选中行的表名, 用来前端展现filter中过滤数据
-  if (tableCurrentSelectRow != null) {
+  if (tableCurrentSelectRow.value != null) {
     return tableCurrentSelectRow.value.tableName
   } else {
     return ''
@@ -96,6 +88,8 @@ const colDelRow = () => {
     })
   })
 }
+
+const showView = ref(false)
 
 const generatorCode = () => {
   // 根据列表数据生成代码
@@ -183,6 +177,10 @@ const handleSearch = () => {
   fetchTableData()
 }
 
+const openView = () => {
+  showView.value = true
+}
+
 onMounted(async () => {
   // 初始化数据
   fetchTableData()
@@ -242,6 +240,7 @@ onMounted(async () => {
           <ElButton type="primary" size="small" @click="colAddRow">增加行</ElButton>
           <ElButton type="danger" size="small" @click="colDelRow">删除行</ElButton>
           <ElButton type="primary" size="small" @click="generatorCode">生成代码</ElButton>
+          <ElButton type="primary" size="small" @click="openView()">预览代码</ElButton>
         </div>
 
         <el-table
@@ -323,4 +322,13 @@ onMounted(async () => {
       <span style="color: red">注: 每次只能生成一个表的代码，以界面显示字段为准</span>
     </el-row>
   </ContentWrap>
+
+  <!-- 代码预览 -->
+  <PreviewCode
+    ref="previewRef"
+    :is-open="showView"
+    @update:is-open="showView = $event"
+    v-if="showView"
+    :table-name="tableCurrentSelectRow.tableName"
+  />
 </template>

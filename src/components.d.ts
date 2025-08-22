@@ -47,10 +47,14 @@ declare module 'vue' {
     ElInput: typeof import('element-plus/es')['ElInput']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTabPane: typeof import('element-plus/es')['ElTabPane']
+    ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
+    ElTree: typeof import('element-plus/es')['ElTree']
     Error: typeof import('./components/Error/src/Error.vue')['default']
     FlowCondition: typeof import('./components/bpmnProcessDesigner/package/penal/flow-condition/FlowCondition.vue')['default']
     Footer: typeof import('./components/Footer/src/Footer.vue')['default']
@@ -97,7 +101,7 @@ declare module 'vue' {
     XButton: typeof import('./components/XButton/src/XButton.vue')['default']
     XTextButton: typeof import('./components/XButton/src/XTextButton.vue')['default']
   }
-  export interface ComponentCustomProperties {
+  export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -19,3 +19,8 @@ export type ColListResponse = {
   list: TableData[]
   total: number
 }
+
+export type PreviewVO = {
+  filePath: string
+  code: string
+}
