@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { provide, reactive } from 'vue'
-import { ElTabs, ElTabPane, ElCard, ElInput, ElRow, ElCol } from 'element-plus'
-import CrontabSecond from './Second.vue'
-import CrontabMin from './Min.vue'
-import CrontabHour from './Hour.vue'
+import { provide } from 'vue'
 import CrontabDay from './Day.vue'
+import CrontabHour from './Hour.vue'
+import CrontabMin from './Min.vue'
 import CrontabMonth from './Month.vue'
+import CrontabResult from './Result.vue'
+import CrontabSecond from './Second.vue'
 import CrontabWeek from './Week.vue'
 import CrontabYear from './Year.vue'
-import CrontabResult from './Result.vue'
 
 // 数据校验,整数表示
 const checkNumber = (value, minLimit, maxLimit) => {

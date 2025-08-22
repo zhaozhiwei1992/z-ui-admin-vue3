@@ -11,6 +11,7 @@ import javascript from 'highlight.js/lib/languages/javascript'
 import sql from 'highlight.js/lib/languages/sql'
 import typescript from 'highlight.js/lib/languages/typescript'
 import 'highlight.js/styles/github.css'
+import { emit } from 'process'
 import { useI18n } from 'vue-i18n'
 
 defineOptions({ name: 'InfraCodegenPreviewCode' })
@@ -30,7 +31,6 @@ const props = defineProps({
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
-const dialogVisible = ref(false) // 弹窗的是否展示
 const loading = ref(false) // 加载中的状态
 const preview = reactive({
   fileTree: [], // 文件树
@@ -120,7 +120,6 @@ onMounted(async () => {
   hljs.registerLanguage('sql', sql)
   hljs.registerLanguage('typescript', typescript)
 
-  dialogVisible.value = true
   try {
     loading.value = true
     // 生成代码
@@ -135,14 +134,26 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const emit = defineEmits(['update:isOpen'])
+
+const localIsOpen = computed({
+  get() {
+    return props.isOpen // 读取父组件的 props
+  },
+  set(newValue) {
+    emit('update:isOpen', newValue) // 通知父组件更新
+  }
+})
 </script>
 <template>
   <Dialog
-    v-model="dialogVisible"
+    v-model="localIsOpen"
     align-center
     class="app-infra-codegen-preview-container"
     title="代码预览"
     width="80%"
+    @close="closeDialog"
   >
     <div class="flex">
       <!-- 代码目录树 -->
