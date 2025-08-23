@@ -1,25 +1,16 @@
 <script name="MenuIndex" setup lang="ts">
+import { delTableListApi, getTableListApi, startApi, stopApi } from '@/api/system/task'
+import { TableData } from '@/api/system/task/types'
 import { ContentWrap } from '@/components/ContentWrap'
 import { Search } from '@/components/Search'
-import { Dialog } from '@/components/Dialog'
-import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElMessage, ElTag } from 'element-plus'
 import { Table } from '@/components/Table'
-import {
-  getTableListApi,
-  saveTableApi,
-  delTableListApi,
-  startApi,
-  stopApi,
-  getJobSelect
-} from '@/api/system/task'
+import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
+import { useI18n } from '@/hooks/web/useI18n'
 import { useTable } from '@/hooks/web/useTable'
-import { TableData } from '@/api/system/task/types'
-import { ref, unref, reactive, h, onMounted } from 'vue'
+import { ElButton, ElMessage } from 'element-plus'
+import { reactive, ref } from 'vue'
 import AddOrUpdate from './components/AddOrUpdate.vue'
 import Detail from './components/Detail.vue'
-import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
-import { ComponentOptions } from '@/types/components'
 
 const { register, tableObject, methods } = useTable<TableData>({
   getListApi: getTableListApi,
@@ -38,12 +29,6 @@ const { getList, setSearchParams } = methods
 getList()
 
 const { t } = useI18n()
-
-const jobOptions = ref<ComponentOptions[] | any>([])
-
-onMounted(async () => {
-  jobOptions.value = await getJobSelect()
-})
 
 const crudSchemas = reactive<CrudSchema[]>([
   {
@@ -66,16 +51,7 @@ const crudSchemas = reactive<CrudSchema[]>([
   },
   {
     field: 'startClass',
-    label: '任务入口',
-    form: {
-      component: 'Select',
-      componentProps: {
-        style: {
-          width: '100%'
-        },
-        options: jobOptions
-      }
-    }
+    label: '任务入口'
   },
   {
     field: 'cronExpression',
@@ -83,38 +59,12 @@ const crudSchemas = reactive<CrudSchema[]>([
   },
   {
     field: 'enable',
-    label: '是否启用',
-    formatter: (_: Recordable, __: TableColumn, cellValue: boolean) => {
-      return h(
-        ElTag,
-        {
-          type: 'success'
-        },
-        () => (cellValue === true ? '启用' : '停用')
-      )
-    },
-    form: {
-      component: 'Switch',
-      componentProps: {
-        style: {
-          width: '100%'
-        }
-      }
-    },
-    detail: {
-      span: 24
-    }
+    label: '是否启用'
   },
   {
     field: 'action',
     width: '260px',
-    label: t('tableDemo.action'),
-    form: {
-      show: false
-    },
-    detail: {
-      show: false
-    }
+    label: t('tableDemo.action')
   }
 ])
 
@@ -129,6 +79,7 @@ const AddAction = () => {
   tableObject.currentRow = null
   dialogVisible.value = true
   actionType.value = ''
+  showView.value = true
 }
 
 const delLoading = ref(false)
@@ -143,6 +94,7 @@ const delData = async (row: TableData | null, multiple: boolean) => {
     multiple
   ).finally(() => {
     delLoading.value = false
+    getList()
   })
 }
 
@@ -181,27 +133,8 @@ const action = (row: TableData, type: string) => {
 
 const writeRef = ref<ComponentRef<typeof AddOrUpdate>>()
 
-const loading = ref(false)
-
-const save = async () => {
-  const write = unref(writeRef)
-  await write?.elFormRef?.validate(async (isValid) => {
-    if (isValid) {
-      loading.value = true
-      const data = (await write?.getFormData()) as TableData
-      const res = await saveTableApi(data)
-        .catch(() => {})
-        .finally(() => {
-          loading.value = false
-        })
-      if (res) {
-        dialogVisible.value = false
-        tableObject.currentPage = 1
-        getList()
-      }
-    }
-  })
-}
+const showView = ref(false)
+const showDetailView = ref(false)
 </script>
 
 <template>
@@ -251,25 +184,19 @@ const save = async () => {
     </Table>
   </ContentWrap>
 
-  <Dialog v-model="dialogVisible" :title="dialogTitle">
-    <AddOrUpdate
-      v-if="actionType !== 'detail'"
-      ref="writeRef"
-      :form-schema="allSchemas.formSchema"
-      :current-row="tableObject.currentRow"
-    />
+  <AddOrUpdate
+    v-if="actionType !== 'detail'"
+    ref="writeRef"
+    :is-open="showView"
+    @update:is-open="showView = $event"
+    @success="getList"
+    :current-row="tableObject.currentRow"
+  />
 
-    <Detail
-      v-if="actionType === 'detail'"
-      :detail-schema="allSchemas.detailSchema"
-      :current-row="tableObject.currentRow"
-    />
-
-    <template #footer>
-      <ElButton v-if="actionType !== 'detail'" type="primary" :loading="loading" @click="save">
-        {{ t('exampleDemo.save') }}
-      </ElButton>
-      <ElButton @click="dialogVisible = false">{{ t('dialogDemo.close') }}</ElButton>
-    </template>
-  </Dialog>
+  <Detail
+    v-if="actionType === 'detail'"
+    :is-open="showDetailView"
+    :detail-schema="allSchemas.detailSchema"
+    :current-row="tableObject.currentRow"
+  />
 </template>
